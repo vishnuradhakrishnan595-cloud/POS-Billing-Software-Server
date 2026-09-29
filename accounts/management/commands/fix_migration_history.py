@@ -16,26 +16,11 @@ class Command(BaseCommand):
 
             self.stdout.write(
                 self.style.WARNING(
-                    "Checking current migration history..."
+                    "Checking PostgreSQL migration history..."
                 )
             )
 
-            cursor.execute(
-                """
-                SELECT app, name
-                FROM django_migrations
-                WHERE app IN ('accounts', 'admin')
-                ORDER BY app, name;
-                """
-            )
-
-            migrations = cursor.fetchall()
-
-            for app, name in migrations:
-                self.stdout.write(
-                    f"  {app}.{name}"
-                )
-
+            # Check whether accounts migration is already recorded.
             cursor.execute(
                 """
                 SELECT EXISTS (
@@ -63,28 +48,72 @@ class Command(BaseCommand):
                 )
             )
 
-            cursor.execute(
-                """
-                DELETE FROM django_migrations
-                WHERE app = 'admin'
-                AND name IN (
-                    '0001_initial',
-                    '0002_logentry_remove_auto_add',
-                    '0003_logentry_add_action_flag_choices'
-                );
-                """
-            )
+            # The admin tables already exist in PostgreSQL.
+            # Therefore record the admin migrations as applied
+            # instead of trying to recreate their tables.
+            admin_migrations = [
+                (
+                    "admin",
+                    "0001_initial",
+                ),
+                (
+                    "admin",
+                    "0002_logentry_remove_auto_add",
+                ),
+                (
+                    "admin",
+                    "0003_logentry_add_action_flag_choices",
+                ),
+            ]
 
-            deleted_count = cursor.rowcount
+            for app, name in admin_migrations:
+
+                cursor.execute(
+                    """
+                    SELECT EXISTS (
+                        SELECT 1
+                        FROM django_migrations
+                        WHERE app = %s
+                        AND name = %s
+                    );
+                    """,
+                    [app, name],
+                )
+
+                exists = cursor.fetchone()[0]
+
+                if not exists:
+
+                    cursor.execute(
+                        """
+                        INSERT INTO django_migrations
+                            (app, name, applied)
+                        VALUES
+                            (%s, %s, NOW());
+                        """,
+                        [app, name],
+                    )
+
+                    self.stdout.write(
+                        self.style.SUCCESS(
+                            f"Recorded {app}.{name} as applied."
+                        )
+                    )
+
+                else:
+
+                    self.stdout.write(
+                        f"{app}.{name} is already recorded."
+                    )
 
             self.stdout.write(
                 self.style.WARNING(
-                    f"Removed {deleted_count} admin migration records."
+                    "Admin migration history has been repaired."
                 )
             )
 
         self.stdout.write(
             self.style.SUCCESS(
-                "Migration history repair completed."
+                "Migration history repair completed successfully."
             )
         )

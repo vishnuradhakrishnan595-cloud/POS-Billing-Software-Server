@@ -1,3 +1,4 @@
+
 """
 Django settings for config project.
 
@@ -24,7 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY
 # =========================================================
 
-DEBUG = config("DEBUG", default=True, cast=bool)
+# Production-safe default.
+# Local development can explicitly set DEBUG=True in .env.
+DEBUG = config("DEBUG", default=False, cast=bool)
 
 SECRET_KEY = config("SECRET_KEY", default="")
 
@@ -33,7 +36,7 @@ if not SECRET_KEY:
         SECRET_KEY = "django-insecure-dev-only-key-do-not-use-in-production"
     else:
         raise ImproperlyConfigured(
-            "SECRET_KEY must be set when DEBUG is False."
+            "SECRET_KEY must be set when DEBUG=False."
         )
 
 
@@ -87,7 +90,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
 
-    # CORS must be before CommonMiddleware
+    # CORS middleware should be before CommonMiddleware
     "corsheaders.middleware.CorsMiddleware",
 
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -137,13 +140,6 @@ ASGI_APPLICATION = "config.asgi.application"
 # =========================================================
 # DATABASE
 # =========================================================
-#
-# Production:
-#   DATABASE_URL = PostgreSQL connection URL
-#
-# Local development:
-#   Falls back to SQLite if DATABASE_URL is not provided.
-#
 
 DATABASE_URL = config("DATABASE_URL", default="")
 
@@ -221,11 +217,9 @@ USE_TZ = True
 # =========================================================
 
 STATIC_URL = "static/"
-
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "media/"
-
 MEDIA_ROOT = BASE_DIR / "media"
 
 
@@ -320,8 +314,7 @@ CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default=(
         "http://localhost:3000,"
-        "http://localhost:5173,"
-        "https://pos-billing-software-client.vercel.app"
+        "http://localhost:5173"
     ),
     cast=Csv(),
 )
@@ -335,9 +328,7 @@ CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
     default=(
         "http://localhost:3000,"
-        "http://localhost:5173,"
-        "https://pos-billing-software-client.vercel.app,"
-        "https://pos-billing-software-server.onrender.com"
+        "http://localhost:5173"
     ),
     cast=Csv(),
 )

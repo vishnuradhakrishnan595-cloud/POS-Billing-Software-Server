@@ -14,16 +14,12 @@ from decouple import Csv, config
 from django.core.exceptions import ImproperlyConfigured
 
 
-# =========================================================
-# BASE DIRECTORY
-# =========================================================
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# =========================================================
-# SECURITY
-# =========================================================
+
 
 # Production-safe default.
 # Local development can explicitly set DEBUG=True in .env.
@@ -40,9 +36,7 @@ if not SECRET_KEY:
         )
 
 
-# =========================================================
-# ALLOWED HOSTS
-# =========================================================
+
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -55,9 +49,7 @@ ALLOWED_HOSTS = config(
 )
 
 
-# =========================================================
-# APPLICATIONS
-# =========================================================
+
 
 INSTALLED_APPS = [
     # Django
@@ -83,9 +75,7 @@ INSTALLED_APPS = [
 ]
 
 
-# =========================================================
-# MIDDLEWARE
-# =========================================================
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -102,16 +92,12 @@ MIDDLEWARE = [
 ]
 
 
-# =========================================================
-# URL CONFIGURATION
-# =========================================================
+
 
 ROOT_URLCONF = "config.urls"
 
 
-# =========================================================
-# TEMPLATES
-# =========================================================
+
 
 TEMPLATES = [
     {
@@ -129,17 +115,13 @@ TEMPLATES = [
 ]
 
 
-# =========================================================
-# WSGI / ASGI
-# =========================================================
+
 
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 
-# =========================================================
-# DATABASE
-# =========================================================
+
 
 DATABASE_URL = config("DATABASE_URL", default="")
 
@@ -160,16 +142,12 @@ else:
     }
 
 
-# =========================================================
-# CUSTOM USER MODEL
-# =========================================================
+
 
 AUTH_USER_MODEL = "accounts.User"
 
 
-# =========================================================
-# PASSWORD VALIDATION
-# =========================================================
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -199,10 +177,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# =========================================================
-# INTERNATIONALIZATION
-# =========================================================
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
@@ -212,9 +186,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# =========================================================
-# STATIC & MEDIA
-# =========================================================
+
 
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
@@ -223,16 +195,12 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 
-# =========================================================
-# DEFAULT PRIMARY KEY
-# =========================================================
+
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# =========================================================
-# DJANGO REST FRAMEWORK
-# =========================================================
+
 
 _renderers = [
     "rest_framework.renderers.JSONRenderer",
@@ -273,9 +241,7 @@ REST_FRAMEWORK = {
 }
 
 
-# =========================================================
-# SIMPLE JWT
-# =========================================================
+
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(
@@ -306,10 +272,6 @@ SIMPLE_JWT = {
 }
 
 
-# =========================================================
-# CORS
-# =========================================================
-
 CORS_ALLOWED_ORIGINS = config(
     "CORS_ALLOWED_ORIGINS",
     default=(
@@ -320,9 +282,6 @@ CORS_ALLOWED_ORIGINS = config(
 )
 
 
-# =========================================================
-# CSRF TRUSTED ORIGINS
-# =========================================================
 
 CSRF_TRUSTED_ORIGINS = config(
     "CSRF_TRUSTED_ORIGINS",
@@ -334,9 +293,7 @@ CSRF_TRUSTED_ORIGINS = config(
 )
 
 
-# =========================================================
-# PRODUCTION SECURITY
-# =========================================================
+
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
@@ -344,10 +301,6 @@ SESSION_COOKIE_SECURE = not DEBUG
 
 CSRF_COOKIE_SECURE = not DEBUG
 
-
-# =========================================================
-# HTTPS / PROXY SETTINGS
-# =========================================================
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = (
@@ -358,9 +311,7 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = False
 
 
-# =========================================================
-# LOGGING
-# =========================================================
+
 
 LOGGING = {
     "version": 1,
